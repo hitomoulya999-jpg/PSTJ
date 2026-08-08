@@ -1,0 +1,46 @@
+import java.util.*;
+import java.util.stream.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+
+        List<Map.Entry<String, Integer>> readings = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            String sensor = sc.next();
+            int temp = sc.nextInt();
+
+            readings.add(
+                new AbstractMap.SimpleEntry<>(sensor, temp)
+            );
+        }
+
+        Map<String, Double> avgTemp = readings.stream()
+                // Consider only temperatures above 50
+                .filter(r -> r.getValue() > 50)
+
+                // Group readings by sensor and calculate average
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getKey,
+                        Collectors.averagingInt(Map.Entry::getValue)
+                ));
+
+        // Sort sensors by average temperature in descending order
+        avgTemp.entrySet().stream()
+                .sorted(
+                    Map.Entry.<String, Double>
+                    comparingByValue()
+                    .reversed()
+                )
+                .forEach(e ->
+                    System.out.println(
+                        e.getKey() + " " + e.getValue()
+                    )
+                );
+
+        sc.close();
+    }
+}
